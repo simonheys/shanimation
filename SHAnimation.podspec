@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
   #
 
-  s.license      = 'MIT (example)'
+  s.license      = 'MIT'
   # s.license      = { :type => 'MIT', :file => 'FILE_LICENSE' }
 
 
@@ -75,7 +75,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, svn and HTTP.
   #
 
-  s.source       = { :git => "http://EXAMPLE/SHAnimation.git", :tag => "0.0.1" }
+  s.source       = { :git => "git@bitbucket.org:simonheys/shanimation.git", :tag => "v0.0.1" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -86,7 +86,7 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = 'Classes', 'Classes/**/*.{h,m}'
+  s.source_files  = 'Classes', 'SHAnimation/**/*.{h,m}'
   s.exclude_files = 'Classes/Exclude'
 
   # s.public_header_files = 'Classes/**/*.h'
@@ -112,7 +112,7 @@ Pod::Spec.new do |s|
   #  the lib prefix of their name.
   #
 
-  # s.framework  = 'SomeFramework'
+  s.framework  = 'QuartzCore'
   # s.frameworks = 'SomeFramework', 'AnotherFramework'
 
   # s.library   = 'iconv'
@@ -128,6 +128,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   # s.xcconfig = { 'HEADER_SEARCH_PATHS' => '$(SDKROOT)/usr/include/libxml2' }
-  s.dependency 'CocoaLumberjack', '~> 1.6.2'
+  # s.dependency 'CocoaLumberjack', '~> 1.6.2'
 
 end

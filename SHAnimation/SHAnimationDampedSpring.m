@@ -156,9 +156,11 @@
 // calculate constants based on motion parameters
 - (void)computeContants
 {
-    self.tolerance = 0.001f;
-    self.tolerance = MAX(self.tolerance, fabs(self.fromValue-self.toValue) * 0.001f);
-    self.tolerance = MAX(self.tolerance, fabs(self.velocity) * 0.001f);
+    self.tolerance = fabs(self.fromValue-self.toValue) * 0.00125f;
+    if ( 0 != self.velocity ) {
+        self.tolerance = MIN(self.tolerance, fabs(self.velocity) * 0.00125f);
+    }
+    self.tolerance = MAX(self.tolerance, 0.00125f);
     // if critically damped
     if ( 1.0f == self.dampingRatio ) {
         self.expTerm = expf( -self.angularFrequency * self.deltaTime );
@@ -221,7 +223,7 @@ static __inline__ void stepSpring(CGFloat deltaTime, CGFloat *currentValue, CGFl
         // else under-damped
         // update motion
         CGFloat c1 = initialPos;
-        CGFloat c2 = (initialVel + omegaZeta*initialPos) / alpha;
+        CGFloat c2 = (initialVel + omegaZeta * initialPos) / alpha;
         *currentValue = toValue + expTerm * ( c1 * cosTerm + c2 * sinTerm );
         *velocity = -expTerm * ( ( c1 * omegaZeta - c2 * alpha ) * cosTerm + ( c1 * alpha + c2 * omegaZeta ) * sinTerm );
     }
