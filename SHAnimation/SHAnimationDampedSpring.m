@@ -75,22 +75,22 @@
     _tolerance = tolerance;
 }
 
-- (CAAnimation *)animationWithKeyPath:(NSString *)path
+- (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path
 {
     return [self animationWithKeyPath:path delay:0];
 }
 
-- (CAAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay
+- (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay
 {
     return [self animationWithKeyPath:path delay:0 timingFunctionName:kSHAnimationDefaultTimingFunctionName];
 }
 
-- (CAAnimation *)animationWithKeyPath:(NSString *)path timingFunctionName:(NSString *)timingFunctionName
+- (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path timingFunctionName:(NSString *)timingFunctionName
 {
     return [self animationWithKeyPath:path delay:0 timingFunctionName:timingFunctionName];
 }
 
-- (CAAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay timingFunctionName:(NSString *)timingFunctionName
+- (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay timingFunctionName:(NSString *)timingFunctionName
 {
 //    CFTimeInterval startTime = CFAbsoluteTimeGetCurrent();
     CGFloat deltaTime = 1.0/60.0f;

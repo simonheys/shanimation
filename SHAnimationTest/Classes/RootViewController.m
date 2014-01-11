@@ -9,9 +9,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "RootViewController.h"
 #import "SHAnimation.h"
-#import "SHAnimationSpringViewController.h"
-#import "SHAnimationDampedSpringView.h"
-#import "RBBSpringAnimation.h"
 #import "DragTestView.h"
 
 @interface RootViewController () <UIGestureRecognizerDelegate, TransitionValueLayerDelegate>
@@ -29,8 +26,6 @@
 @property (nonatomic, strong) SHAnimationUnitBezier *cardDistanceUnitBezier;
 @property (nonatomic, strong) SHAnimationUnitBezier *cardZUnitBezier;
 @property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayer;
-@property (nonatomic, retain) SHAnimationSpringViewController *springViewController;
-@property (nonatomic, retain) SHAnimationDampedSpringView *dampedSpringView;
 @property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayerA;
 @property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayerB;
 @end
@@ -65,6 +60,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = [UIColor whiteColor];
 	// Do any additional setup after loading the view, typically from a nib.
     
 //    self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGestureRecognizer:)];
@@ -177,14 +174,6 @@
     transform.m34 = -1.0/1000.0;
     self.view.layer.sublayerTransform = transform;
     
-    self.springViewController = [[SHAnimationSpringViewController alloc] initWithNibName:@"SHAnimationSpringViewController" bundle:nil];
-    [self.view addSubview:self.springViewController.view];
-    self.springViewController.view.hidden = YES;
-
-    self.dampedSpringView = [[SHAnimationDampedSpringView alloc] initWithFrame:CGRectMake(0,0,768,768)];
-    [self.view addSubview:self.dampedSpringView];
-    
-
 //    SHAnimationDampedSpring *dampedSpring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.7f];
 //    dampedSpring.fromValue = 0.0f;
 //    dampedSpring.toValue = 500.0f;
@@ -194,8 +183,11 @@
     dampedSpring.fromValue = 0.0f;
     dampedSpring.toValue = 500.0f;
     dampedSpring.frequencyHz = 0.5f;
+    dampedSpring.dampingRatio = 0.5f;
 
-    CAAnimation *a = [dampedSpring animationWithKeyPath:@"transform.translation.x"];
+    CAKeyframeAnimation *a = [dampedSpring animationWithKeyPath:@"transform.translation.x"];
+    // "paced" better for tracking interaction?
+    a.calculationMode = @"paced";
     NSLog(@"a.duration:%f",a.duration);
 //    a.duration = 3.0f;
 //    a.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
@@ -217,11 +209,11 @@
     [UIView animateWithDuration:a.duration*0.85f delay:0 usingSpringWithDamping:1.0f initialSpringVelocity:0.0f options:UIViewAnimationOptionCurveEaseInOut animations:^{
         testViewA.frame = CGRectMake(500,0,200,200);
     } completion:^(BOOL finished) {
-        DDLogVerbose(@"testViewA done");
+        NSLog(@"testViewA done");
     }];
     
     CAAnimation *sa = [testViewA.layer animationForKey:@"position"];
-//    DDLogVerbose(@"sa:%@",sa);
+//    NSLog(@"sa:%@",sa);
     CGFloat damping = [[sa valueForKey:@"damping"] floatValue];
     CGFloat stiffness = [[sa valueForKey:@"stiffness"] floatValue];
     CGFloat mass = [[sa valueForKey:@"mass"] floatValue];
@@ -257,8 +249,8 @@
 
 - (void)sliderChanged:(UISlider *)slider
 {
-//    DDLogVerbose(@"slider:%f",slider.value);
-    CAAnimation *dampedSpringAnimation = [self.testView4.layer animationForKey:@"dampedSpringAnimation"];
+//    NSLog(@"slider:%f",slider.value);
+    CAKeyframeAnimation *dampedSpringAnimation = (CAKeyframeAnimation *)[self.testView4.layer animationForKey:@"dampedSpringAnimation"];
     self.testView4.layer.timeOffset = slider.value * dampedSpringAnimation.duration;
 }
 
@@ -319,7 +311,7 @@ CGFloat JNWAngularFrequency(CGFloat k, CGFloat m, CGFloat b) {
 - (void)beginTrackingPinchWithCellAtIndexPath:(NSIndexPath *)indexPath
 {
     id model = [self modelAtIndexPath:indexPath];
-    DDLogVerbose(@"model:%@",model);
+    NSLog(@"model:%@",model);
     
     CardCollectionViewLayout *cardCollectionViewLayout = (CardCollectionViewLayout *)self.cardCollectionView.collectionViewLayout;
     cardCollectionViewLayout.hiddenIndexPath = indexPath;
@@ -349,7 +341,7 @@ CGFloat JNWAngularFrequency(CGFloat k, CGFloat m, CGFloat b) {
     
     SHAnimationSpring *spring = [SHAnimationSpring unitSpring];
     CGFloat velocity = self.pinchGestureRecognizer.velocity;
-    DDLogVerbose(@"velocity:%f",velocity);
+    NSLog(@"velocity:%f",velocity);
     CGFloat targetTransitionValue = self.transitionValue + (velocity/10.0f) > 0.5f ? 1.0f : 0.0f;
     spring.value = self.transitionValue;
     spring.restingValue = targetTransitionValue;
@@ -406,14 +398,14 @@ CGFloat JNWAngularFrequency(CGFloat k, CGFloat m, CGFloat b) {
     
 //    t = CGAffineTransformRotate(t, rotation);
 //    self.pinchCardCollectionViewCell.transform = t;
-    DDLogVerbose(@"scale:%f",scale);
+    NSLog(@"scale:%f",scale);
     
 //    self.transitionValue = CGFloatMapTransition(scale, 1, 3, 0, 1);
 }
 
 - (void)setTransitionValue:(CGFloat)transitionValue
 {
-    DDLogVerbose(@"setTransitionValue:%f",transitionValue);
+    NSLog(@"setTransitionValue:%f",transitionValue);
     double x, y, z, r;
     double m;
     CATransform3D t;

@@ -19,8 +19,8 @@
 + (instancetype)unitSpring;
 + (instancetype)unitSpringWithDampingRatio:(CGFloat)dampingRatio;
 - (CGFloat)stepTime:(CGFloat)dt;
-- (CAAnimation *)animationWithKeyPath:(NSString *)path;
-- (CAAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay;
-- (CAAnimation *)animationWithKeyPath:(NSString *)path timingFunctionName:(NSString *)timingFunctionName;
-- (CAAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay timingFunctionName:(NSString *)timingFunctionName;
+- (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path;
+- (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay;
+- (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path timingFunctionName:(NSString *)timingFunctionName;
+- (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay timingFunctionName:(NSString *)timingFunctionName;
 @end
