@@ -236,7 +236,15 @@ static __inline__ void stepSpring(CGFloat deltaTime, CGFloat *currentValue, CGFl
         [self computeConstants];
     }
     CGFloat envelope = expf(-self.omegaZeta * t);
-    return self.toValue + (self.fromValue - self.toValue) * envelope;
+    // TODO: log here is reversing the expf calculation in computeConstants
+    // so that we can convert to absolute time rather than delta
+    envelope = expf(log(self.expTerm) * t / self.deltaTime);
+    if ( 0 == self.velocity ) {
+        return self.toValue + (self.fromValue - self.toValue) * envelope;
+    }
+    else {
+        return self.toValue + ((self.fromValue - self.toValue) + self.velocity/self.alpha) * envelope;
+    }
 }
 
 - (CGFloat)stepTime:(CGFloat)t

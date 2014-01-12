@@ -43,7 +43,8 @@
     self.spring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.2f];
     self.spring.fromValue = 1.0f;
     self.spring.toValue = 0.0f;
-    self.spring.frequencyHz = 1.0f;
+    self.spring.frequencyHz = 2.0f;
+    self.spring.velocity = 0;
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGFloat v;
@@ -87,6 +88,10 @@
     CGContextBeginPath(context);
     first = YES;
     double t = 0;
+    self.spring.fromValue = 1.0f;
+    self.spring.toValue = 0.0f;
+    self.spring.frequencyHz = 2.0f;
+    self.spring.velocity = 0;
     for ( double x = 0; x <= 1; x+=1.0/rect.size.width ) {
         double y = [self.spring envelopeForTime:t];
         t += 1/60.0f;
