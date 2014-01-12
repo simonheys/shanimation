@@ -98,7 +98,7 @@
         self.deltaTime = deltaTime;
     }
     if ( self.needsRecalculation ) {
-        [self computeContants];
+        [self computeConstants];
         self.needsRecalculation = NO;
     }
 	NSMutableArray *values = [NSMutableArray arrayWithCapacity:kSHAnimationMaximumKeyframeCount];
@@ -154,7 +154,7 @@
 }
 
 // calculate constants based on motion parameters
-- (void)computeContants
+- (void)computeConstants
 {
     self.tolerance = fabs(self.fromValue-self.toValue) * 0.00125f;
     if ( 0 != self.velocity ) {
@@ -239,7 +239,7 @@ static __inline__ void stepSpring(CGFloat deltaTime, CGFloat *currentValue, CGFl
         self.deltaTime = t;
     }
     if ( self.needsRecalculation ) {
-        [self computeContants];
+        [self computeConstants];
         self.needsRecalculation = NO;
     }
  

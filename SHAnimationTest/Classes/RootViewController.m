@@ -10,6 +10,7 @@
 #import "RootViewController.h"
 #import "SHAnimation.h"
 #import "DragTestView.h"
+#import "SHAnimationDampedSpringView.h"
 
 @interface RootViewController () <UIGestureRecognizerDelegate, TransitionValueLayerDelegate>
 @property (nonatomic, strong) UIPinchGestureRecognizer *pinchGestureRecognizer;
@@ -28,6 +29,7 @@
 @property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayer;
 @property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayerA;
 @property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayerB;
+@property (nonatomic, strong) SHAnimationDampedSpringView *dampedSpringView;
 @end
 
 @implementation RootViewController
@@ -242,6 +244,10 @@
     UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(0,0,384,44)];
     [slider addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:slider];
+    
+    self.dampedSpringView = [[SHAnimationDampedSpringView alloc] initWithFrame:CGRectMake(0,0,self.view.bounds.size.width,300)];
+    self.dampedSpringView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [self.view addSubview:self.dampedSpringView];
     
     DragTestView *dragTestView = [[DragTestView alloc] initWithFrame:CGRectMake(0,self.view.bounds.size.height-200,self.view.bounds.size.width,200)];
     [self.view addSubview:dragTestView];

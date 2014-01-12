@@ -11,6 +11,7 @@
 @interface SHAnimationDampedSpring : NSObject
 
 @property (nonatomic) CGFloat frequencyHz;
+@property (nonatomic, readonly) CGFloat angularFrequency;
 @property (nonatomic) CGFloat dampingRatio;
 @property (nonatomic) CGFloat toValue;
 @property (nonatomic) CGFloat velocity;

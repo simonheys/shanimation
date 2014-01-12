@@ -40,9 +40,10 @@
 //    self.spring.angularFrequencyHz = 1.0f;
 //    self.spring.dampingRatio = 0.5f;
     
-    self.spring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.7f];
-    self.spring.fromValue = 0.0f;
-    self.spring.toValue = 1.0f;
+    self.spring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.2f];
+    self.spring.fromValue = 1.0f;
+    self.spring.toValue = 0.0f;
+    self.spring.frequencyHz = 2.0f;
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGFloat v;
@@ -65,12 +66,13 @@
     CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
     CGContextBeginPath(context);
     BOOL first = YES;
-    for ( double x = 0; x <= 1; x+=1.0/120.0 ) {
-        
-        // find the t based on x position (we will need to do this to maintain scroll position)
+    
+//    CGFloat envelope;
+    
+
+    for ( double x = 0; x <= 1; x+=1.0/rect.size.width ) {
         double y = [self.spring stepTime:1.0/60.0];
         v = 0.5 + y * 0.25 * self.verticalScale;
-//        DDLogVerbose(@"y:%f",y);
         if ( first) {
             CGContextMoveToPoint(context, x*rect.size.width, v*rect.size.height);
         }
@@ -78,13 +80,41 @@
             CGContextAddLineToPoint(context, x*rect.size.width, v*rect.size.height);
         }
         first = NO;
-//        DLog(@"%f: %f %f",t, t*rect.size.width, v*rect.size.height);
-//DLog(@"%f: %f %f %f %f %f",t,[bezier sampleCurveX:t],[bezier sampleCurveY:t],[bezier sampleCurveDerivativeX:t],[bezier solveCurveX:t epsilon:0.0001],[bezier solve:t epsilon:0.0001]);
-//        DLog(@"%f: %f",t,[bezier solveCurveX:t epsilon:0.0001]);
     }
-//    CGContextClosePath(context);
     CGContextStrokePath(context);
 
+//    CFTimeInterval duration = 0;
+//    while (expf(-beta * duration) >= epsilon) {
+//        duration += 0.1;
+//    }
+//
+//    return duration;
+
+    CGContextSetStrokeColorWithColor(context, [UIColor blueColor].CGColor);
+    CGContextBeginPath(context);
+    first = YES;
+    CGFloat beta = 1.0f;//self.spring.frequencyHz;
+    CGFloat omegaZeta = self.spring.angularFrequency * self.spring.dampingRatio;
+    double t = 0;
+    for ( double x = 0; x <= 1; x+=1.0/rect.size.width ) {
+        double envelope = expf(-omegaZeta * sqrtf(self.spring.frequencyHz * self.spring.dampingRatio) * t  );
+        envelope = expf(-omegaZeta * t);
+//        double envelope = expf(-beta * sqrtf(self.spring.frequencyHz * self.spring.dampingRatio) * t  );
+//        beta *= self.spring.dampingRatio * 1/60.0f;
+//        beta *= 1.0f;
+//        beta *= 1.0f / self.spring.dampingRatio;
+//        beta = self.spring.dampingRatio;
+        t += 1/60.0f;
+        v = 0.5 + (self.spring.toValue + (self.spring.fromValue - self.spring.toValue)) * envelope * 0.25 * self.verticalScale;
+        if ( first) {
+            CGContextMoveToPoint(context, x*rect.size.width, v*rect.size.height);
+        }
+        else {
+            CGContextAddLineToPoint(context, x*rect.size.width, v*rect.size.height);
+        }
+        first = NO;
+    }
+    CGContextStrokePath(context);
 }
 
 
