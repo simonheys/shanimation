@@ -172,6 +172,7 @@
         self.cosTerm = cosf( self.alpha * self.deltaTime );
         self.sinTerm = sinf( self.alpha * self.deltaTime );
     }
+    self.needsRecalculation = NO;
 }
 
 // stepTime is based on http://www.ryanjuckett.com/programming/17-physics/34-damped-springs?start=9
@@ -231,6 +232,9 @@ static __inline__ void stepSpring(CGFloat deltaTime, CGFloat *currentValue, CGFl
 
 - (CGFloat)envelopeForTime:(CGFloat)t
 {
+    if ( self.needsRecalculation ) {
+        [self computeConstants];
+    }
     CGFloat envelope = expf(-self.omegaZeta * t);
     return self.toValue + (self.fromValue - self.toValue) * envelope;
 }
@@ -246,7 +250,6 @@ static __inline__ void stepSpring(CGFloat deltaTime, CGFloat *currentValue, CGFl
     }
     if ( self.needsRecalculation ) {
         [self computeConstants];
-        self.needsRecalculation = NO;
     }
  
     // calculate initial state in equilibrium relative space

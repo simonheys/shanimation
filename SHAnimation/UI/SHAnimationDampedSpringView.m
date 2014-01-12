@@ -83,31 +83,14 @@
     }
     CGContextStrokePath(context);
 
-//    CFTimeInterval duration = 0;
-//    while (expf(-beta * duration) >= epsilon) {
-//        duration += 0.1;
-//    }
-//
-//    return duration;
-
     CGContextSetStrokeColorWithColor(context, [UIColor blueColor].CGColor);
     CGContextBeginPath(context);
     first = YES;
-    CGFloat beta = 1.0f;//self.spring.frequencyHz;
-    CGFloat omegaZeta = self.spring.angularFrequency * self.spring.dampingRatio;
     double t = 0;
     for ( double x = 0; x <= 1; x+=1.0/rect.size.width ) {
-//        double envelope = expf(-omegaZeta * t);
         double y = [self.spring envelopeForTime:t];
-//        double envelope = expf(-beta * sqrtf(self.spring.frequencyHz * self.spring.dampingRatio) * t  );
-//        beta *= self.spring.dampingRatio * 1/60.0f;
-//        beta *= 1.0f;
-//        beta *= 1.0f / self.spring.dampingRatio;
-//        beta = self.spring.dampingRatio;
         t += 1/60.0f;
-//        v = 0.5 + (self.spring.toValue + (self.spring.fromValue - self.spring.toValue)) * envelope * 0.25 * self.verticalScale;
         v = 0.5 + y * 0.25 * self.verticalScale;
-
         if ( first) {
             CGContextMoveToPoint(context, x*rect.size.width, v*rect.size.height);
         }
