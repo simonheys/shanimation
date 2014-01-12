@@ -20,6 +20,7 @@
 + (instancetype)unitSpring;
 + (instancetype)unitSpringWithDampingRatio:(CGFloat)dampingRatio;
 - (CGFloat)stepTime:(CGFloat)dt;
+- (CGFloat)envelopeForTime:(CGFloat)t;
 - (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path;
 - (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path delay:(CFTimeInterval)delay;
 - (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path timingFunctionName:(NSString *)timingFunctionName;

@@ -229,6 +229,12 @@ static __inline__ void stepSpring(CGFloat deltaTime, CGFloat *currentValue, CGFl
     }
 }
 
+- (CGFloat)envelopeForTime:(CGFloat)t
+{
+    CGFloat envelope = expf(-self.omegaZeta * t);
+    return self.toValue + (self.fromValue - self.toValue) * envelope;
+}
+
 - (CGFloat)stepTime:(CGFloat)t
 {
     // if there is no angular frequency, the spring will not move
