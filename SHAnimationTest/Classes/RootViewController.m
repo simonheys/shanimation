@@ -372,21 +372,21 @@
 
 - (void)endTrackingPinch
 {
-    __weak typeof(self) blockSelf = self;
+//    __weak typeof(self) blockSelf = self;
     self.isTrackingPinch = NO;
     
-    SHAnimationSpring *spring = [SHAnimationSpring unitSpring];
+    SHAnimationDampedSpring *spring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.5f];
     CGFloat velocity = self.pinchGestureRecognizer.velocity;
     NSLog(@"velocity:%f",velocity);
     CGFloat targetTransitionValue = self.transitionValue + (velocity/10.0f) > 0.5f ? 1.0f : 0.0f;
-    spring.value = self.transitionValue;
-    spring.restingValue = targetTransitionValue;
+    spring.fromValue = self.transitionValue;
+    spring.toValue = targetTransitionValue;
     spring.velocity = velocity / 60.0f;
     
     [self.transitionValueLayer removeAllAnimations];
     [CATransaction begin];
 //    CGFloat duration;
-    CAAnimation *animation = [spring animationWithKeyPath:@"transitionValue"];
+    CAKeyframeAnimation *animation = [spring animationWithKeyPath:@"transitionValue"];
 //    [CATransaction setValue:@(duration) forKey:kCATransactionAnimationDuration];
     [self.transitionValueLayer addAnimation:animation forKey:@"transitionValue"];
     [self.transitionValueLayer setValue:@(targetTransitionValue) forKeyPath:@"transitionValue"];
@@ -465,7 +465,10 @@
 //    self.testView2.transform = t;
     t = CATransform3DMakeTranslation(x, y, z);
     t = CATransform3DRotate(t, r, 0.3, 1, 0);
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
     self.testView2.layer.transform = t;
+    [CATransaction commit];
 }
 
 - (void)transitionValueLayer:(SHAnimationTransitionValueLayer *)transitionValueLayer transitionValueChanged:(CGFloat)transitionValue
