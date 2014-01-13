@@ -280,6 +280,7 @@
     spring.fromValue = -10.0f;
     spring.toValue = 0.0f;
     spring.velocity = -1500.0f;
+    spring.tolerance = 0.5f;
     CAKeyframeAnimation *springAnimation = [spring animationWithKeyPath:@"transform.translation.z" delay:0 timingFunctionName:kCAMediaTimingFunctionLinear];
     [springAnimation setValue:@"zTestViewSpringAnimation" forKey:@"animationName"];
     springAnimation.delegate = self;

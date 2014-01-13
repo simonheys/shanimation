@@ -9,6 +9,8 @@
 #import "SHAnimationDampedSpring.h"
 #import "SHAnimation.h"
 
+CGFloat const kSHAnimationDampedSpringDefaultTolerance = 0.001f;
+
 @interface SHAnimationDampedSpring ()
 @property (nonatomic) CGFloat angularFrequency;
 @property (nonatomic) CGFloat omegaZeta;
@@ -17,7 +19,6 @@
 @property (nonatomic) CGFloat cosTerm;
 @property (nonatomic) CGFloat sinTerm;
 @property (nonatomic) CGFloat deltaTime;
-@property (nonatomic) CGFloat tolerance;
 @property (nonatomic) CGFloat currentValue;
 @property (nonatomic) BOOL needsRecalculation;
 @end
@@ -32,20 +33,13 @@
     spring.toValue = 0.0f;
     spring.fromValue = 1.0f;
     spring.velocity = 0.0f;
+    spring.tolerance = kSHAnimationDampedSpringDefaultTolerance;
     return spring;
 }
 
 + (instancetype)unitSpring
 {
     return [SHAnimationDampedSpring unitSpringWithDampingRatio:1.0f];
-}
-
-- (BOOL)stopped
-{
-    if ( fabs(self.velocity) < self.tolerance && fabs(self.currentValue - self.toValue) < self.tolerance ) {
-        return YES;
-    }
-    return NO;
 }
 
 - (void)setFromValue:(CGFloat)value
@@ -69,10 +63,10 @@
 
 - (void)setTolerance:(CGFloat)tolerance
 {
-    if ( 0 == tolerance ) {
-        NSLog(@"what?");
+    _tolerance = fabs(tolerance);
+    if ( 0 == _tolerance ) {
+        _tolerance = kSHAnimationDampedSpringDefaultTolerance;
     }
-    _tolerance = tolerance;
 }
 
 - (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path
@@ -101,18 +95,29 @@
         [self computeConstants];
         self.needsRecalculation = NO;
     }
-	NSMutableArray *values = [NSMutableArray arrayWithCapacity:kSHAnimationMaximumKeyframeCount];
+    NSInteger keyFrameCountByEnvelope = 0;
+    while ( keyFrameCountByEnvelope < kSHAnimationMaximumKeyframeCount ) {
+        CGFloat e = [self envelopeForTime:keyFrameCountByEnvelope * 1.0f / 60.0f];
+//        NSLog(@"e:%f",fabs(self.toValue-e));
+        if ( fabs(self.toValue-e) < self.tolerance ) {
+            NSLog(@"keyFrames by envelope:%d",keyFrameCountByEnvelope);
+            break;
+        }
+        keyFrameCountByEnvelope++;
+    }
+    
     NSInteger keyFrameCount = 0;
-    while ( !self.stopped && keyFrameCount < delay * 60.0f && keyFrameCount < kSHAnimationMaximumKeyframeCount ) {
+	NSMutableArray *values = [NSMutableArray arrayWithCapacity:keyFrameCountByEnvelope];
+    while ( keyFrameCount < delay * 60.0f && keyFrameCount < keyFrameCountByEnvelope ) {
 		[values addObject:@(self.currentValue)];
         keyFrameCount++;
     }
-    while ( !self.stopped && keyFrameCount < kSHAnimationMaximumKeyframeCount ) {
+    while ( keyFrameCount < keyFrameCountByEnvelope ) {
         stepSpring(deltaTime, &_currentValue, _toValue, &_velocity, _angularFrequency, _dampingRatio, _expTerm, _omegaZeta, _alpha, _cosTerm, _sinTerm);
-//		[self stepTime:deltaTime];
 		[values addObject:@(_currentValue)];
         keyFrameCount++;
     }
+    NSLog(@"keyFrames:%d",keyFrameCount);
     
     if ( keyFrameCount >= kSHAnimationMaximumKeyframeCount ) {
         NSLog(@"excessibvley long!");
@@ -156,11 +161,6 @@
 // calculate constants based on motion parameters
 - (void)computeConstants
 {
-    self.tolerance = fabs(self.fromValue-self.toValue) * 0.00125f;
-    if ( 0 != self.velocity ) {
-        self.tolerance = MIN(self.tolerance, fabs(self.velocity) * 0.00125f);
-    }
-    self.tolerance = MAX(self.tolerance, 0.00125f);
     // if critically damped
     if ( 1.0f == self.dampingRatio ) {
         self.expTerm = expf( -self.angularFrequency * self.deltaTime );

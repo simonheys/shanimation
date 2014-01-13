@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+extern CGFloat const kSHAnimationDampedSpringDefaultTolerance;
+
 @interface SHAnimationDampedSpring : NSObject
 
 @property (nonatomic) CGFloat frequencyHz;
@@ -16,7 +18,9 @@
 @property (nonatomic) CGFloat toValue;
 @property (nonatomic) CGFloat velocity;
 @property (nonatomic) CGFloat fromValue;
+@property (nonatomic) CGFloat tolerance;
 
+- (instancetype)init __attribute__((unavailable("init not available")));
 + (instancetype)unitSpring;
 + (instancetype)unitSpringWithDampingRatio:(CGFloat)dampingRatio;
 - (CGFloat)stepTime:(CGFloat)dt;
