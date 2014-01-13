@@ -95,24 +95,24 @@ CGFloat const kSHAnimationDampedSpringDefaultTolerance = 0.001f;
         [self computeConstants];
         self.needsRecalculation = NO;
     }
-    NSInteger keyFrameCountByEnvelope = 0;
-    while ( keyFrameCountByEnvelope < kSHAnimationMaximumKeyframeCount ) {
-        CGFloat e = [self envelopeForTime:keyFrameCountByEnvelope * 1.0f / 60.0f];
-//        NSLog(@"e:%f",fabs(self.toValue-e));
-        if ( fabs(self.toValue-e) < self.tolerance ) {
-            NSLog(@"keyFrames by envelope:%d",keyFrameCountByEnvelope);
-            break;
-        }
-        keyFrameCountByEnvelope++;
+    
+    // how many keyframes to hit the tolerance?
+    NSInteger keyframesToTolerance = 0;
+    CGFloat envelope = CGFLOAT_MAX;
+    while ( fabs(envelope - self.toValue) > self.tolerance && keyframesToTolerance < kSHAnimationMaximumKeyframeCount ) {
+        envelope = [self envelopeForTime:keyframesToTolerance * 1.0f / 60.0f];
+        keyframesToTolerance++;
     }
     
+    // delay, hold on same keyframe
     NSInteger keyFrameCount = 0;
-	NSMutableArray *values = [NSMutableArray arrayWithCapacity:keyFrameCountByEnvelope];
-    while ( keyFrameCount < delay * 60.0f && keyFrameCount < keyFrameCountByEnvelope ) {
+	NSMutableArray *values = [NSMutableArray arrayWithCapacity:keyframesToTolerance];
+    while ( keyFrameCount < delay * 60.0f && keyFrameCount < keyframesToTolerance ) {
 		[values addObject:@(self.currentValue)];
         keyFrameCount++;
     }
-    while ( keyFrameCount < keyFrameCountByEnvelope ) {
+    
+    while ( keyFrameCount < keyframesToTolerance ) {
         stepSpring(deltaTime, &_currentValue, _toValue, &_velocity, _angularFrequency, _dampingRatio, _expTerm, _omegaZeta, _alpha, _cosTerm, _sinTerm);
 		[values addObject:@(_currentValue)];
         keyFrameCount++;
@@ -175,6 +175,22 @@ CGFloat const kSHAnimationDampedSpringDefaultTolerance = 0.001f;
     self.needsRecalculation = NO;
 }
 
+
+- (CGFloat)envelopeForTime:(CGFloat)t
+{
+    if ( self.needsRecalculation ) {
+        [self computeConstants];
+    }
+    CGFloat envelope = expf( -self.angularFrequency * self.dampingRatio * t );
+
+    if ( 0 == self.velocity ) {
+        return self.toValue + (self.fromValue - self.toValue) * envelope;
+    }
+    else {
+        return self.toValue + ((self.fromValue - self.toValue) + self.velocity/self.alpha) * envelope;
+    }
+}
+
 // stepTime is based on http://www.ryanjuckett.com/programming/17-physics/34-damped-springs?start=9
 
 /******************************************************************************
@@ -227,23 +243,6 @@ static __inline__ void stepSpring(CGFloat deltaTime, CGFloat *currentValue, CGFl
         CGFloat c2 = (initialVel + omegaZeta * initialPos) / alpha;
         *currentValue = toValue + expTerm * ( c1 * cosTerm + c2 * sinTerm );
         *velocity = -expTerm * ( ( c1 * omegaZeta - c2 * alpha ) * cosTerm + ( c1 * alpha + c2 * omegaZeta ) * sinTerm );
-    }
-}
-
-- (CGFloat)envelopeForTime:(CGFloat)t
-{
-    if ( self.needsRecalculation ) {
-        [self computeConstants];
-    }
-    CGFloat envelope = expf(-self.omegaZeta * t);
-    // TODO: log here is reversing the expf calculation in computeConstants
-    // so that we can convert to absolute time rather than delta
-    envelope = expf(log(self.expTerm) * t / self.deltaTime);
-    if ( 0 == self.velocity ) {
-        return self.toValue + (self.fromValue - self.toValue) * envelope;
-    }
-    else {
-        return self.toValue + ((self.fromValue - self.toValue) + self.velocity/self.alpha) * envelope;
     }
 }
 

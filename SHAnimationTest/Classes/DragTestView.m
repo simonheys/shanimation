@@ -87,11 +87,13 @@
         dampedSpring.fromValue = pFrom.x;
         dampedSpring.toValue = pTo.x;
         dampedSpring.velocity = v.x;
+        dampedSpring.tolerance = 0.1f;
         CAAnimation *xAnimation = [dampedSpring animationWithKeyPath:@"position.x"];
         
         dampedSpring.fromValue = pFrom.y;
         dampedSpring.toValue = pTo.y;
         dampedSpring.velocity = v.y;
+        dampedSpring.tolerance = 0.1f;
         CAAnimation *yAnimation = [dampedSpring animationWithKeyPath:@"position.y"];
         
 //        self.dragView.frame = CGRectMake(0,0,100,100);
