@@ -37,7 +37,7 @@
 
 - (void)drawInContext:(CGContextRef)context
 {
-    NSLog(@"transitionValue:%f",self.transitionValue);
+    NSLog(@"drawInContext transitionValue:%f delegate:%@",self.transitionValue,self.delegate);
     if ( nil != self.delegate ) {
         [self.delegate transitionValueLayer:self transitionValueChanged:self.transitionValue];
     }

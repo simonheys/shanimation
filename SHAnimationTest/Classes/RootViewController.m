@@ -12,6 +12,11 @@
 #import "DragTestView.h"
 #import "SHAnimationDampedSpringView.h"
 
+NSString *NSStringFromCATransform3D(CATransform3D t) {
+    
+    return [NSString stringWithFormat:@"CATransform3D {\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n}", t.m11, t.m12, t.m13, t.m14, t.m21, t.m22, t.m23, t.m24, t.m31, t.m32, t.m33, t.m34, t.m41, t.m42, t.m43, t.m44];
+}
+
 @interface RootViewController () <UIGestureRecognizerDelegate, TransitionValueLayerDelegate>
 @property (nonatomic, strong) UIPinchGestureRecognizer *pinchGestureRecognizer;
 @property (nonatomic, strong) UIPanGestureRecognizer *panGestureRecognizer;
@@ -28,8 +33,6 @@
 @property (nonatomic, strong) SHAnimationUnitBezier *cardDistanceUnitBezier;
 @property (nonatomic, strong) SHAnimationUnitBezier *cardZUnitBezier;
 @property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayer;
-@property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayerA;
-@property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayerB;
 @property (nonatomic, strong) SHAnimationDampedSpringView *dampedSpringView;
 @end
 
@@ -375,13 +378,14 @@
 //    __weak typeof(self) blockSelf = self;
     self.isTrackingPinch = NO;
     
-    SHAnimationDampedSpring *spring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.5f];
+    SHAnimationDampedSpring *spring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.85f];
     CGFloat velocity = self.pinchGestureRecognizer.velocity;
     NSLog(@"velocity:%f",velocity);
     CGFloat targetTransitionValue = self.transitionValue + (velocity/10.0f) > 0.5f ? 1.0f : 0.0f;
     spring.fromValue = self.transitionValue;
     spring.toValue = targetTransitionValue;
     spring.velocity = velocity / 60.0f;
+    spring.frequencyHz = 2.0f;
     
     [self.transitionValueLayer removeAllAnimations];
     [CATransaction begin];
@@ -461,10 +465,9 @@
         r = CGFloatMapTransition(m, 0.5, 1, -M_PI/6, 0);
     }
     
-//    CGAffineTransform t = CGAffineTransformMakeTranslation(a, 0);
-//    self.testView2.transform = t;
     t = CATransform3DMakeTranslation(x, y, z);
     t = CATransform3DRotate(t, r, 0.3, 1, 0);
+    NSLog(@"t:%@",NSStringFromCATransform3D(t));
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     self.testView2.layer.transform = t;
@@ -473,9 +476,9 @@
 
 - (void)transitionValueLayer:(SHAnimationTransitionValueLayer *)transitionValueLayer transitionValueChanged:(CGFloat)transitionValue
 {
-    if ( [transitionValueLayer isEqual:self.transitionValueLayer] ) {
+//    if ( [transitionValueLayer isEqual:self.transitionValueLayer] ) {
         self.transitionValue = transitionValue;
-    }
+//    }
 }
 
 @end
