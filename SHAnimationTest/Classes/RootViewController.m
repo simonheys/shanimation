@@ -24,6 +24,7 @@
 @property (nonatomic, strong) UIView *testView2;
 @property (nonatomic, strong) UIView *testView3;
 @property (nonatomic, strong) UIView *testView4;
+@property (nonatomic, strong) UIView *zTestView;
 @property (nonatomic, strong) SHAnimationUnitBezier *cardDistanceUnitBezier;
 @property (nonatomic, strong) SHAnimationUnitBezier *cardZUnitBezier;
 @property (nonatomic, strong) SHAnimationTransitionValueLayer *transitionValueLayer;
@@ -168,12 +169,12 @@
     self.testView2.backgroundColor = [UIColor greenColor];
     [self.view addSubview:self.testView2];
     
-    self.testView = [[UIView alloc] initWithFrame:CGRectMake(256,256,256,256)];
-    self.testView.backgroundColor = [UIColor redColor];
-    [self.view addSubview:self.testView];
+//    self.testView = [[UIView alloc] initWithFrame:CGRectMake(256,256,256,256)];
+//    self.testView.backgroundColor = [UIColor redColor];
+//    [self.view addSubview:self.testView];
     
     CATransform3D transform = CATransform3DIdentity;
-    transform.m34 = -1.0/1000.0;
+    transform.m34 = -1.0/500.0;
     self.view.layer.sublayerTransform = transform;
     
 //    SHAnimationDampedSpring *dampedSpring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.7f];
@@ -251,6 +252,16 @@
     
     DragTestView *dragTestView = [[DragTestView alloc] initWithFrame:CGRectMake(0,self.view.bounds.size.height-200,self.view.bounds.size.width,200)];
     [self.view addSubview:dragTestView];
+    
+    self.zTestView = [[UIView alloc] initWithFrame:CGRectMake(0,0,200,200)];
+    self.zTestView.center = self.view.center;
+    self.zTestView.backgroundColor = [UIColor magentaColor];
+//    [self.zTestView.layer setValue:@(384) forKey:@"transform.translation.x"];
+//    [self.zTestView.layer setValue:@(1024/2) forKey:@"transform.translation.y"];
+    [self.view addSubview:self.zTestView];
+    
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(zTestViewTapped:)];
+    [self.zTestView addGestureRecognizer:tapGestureRecognizer];
 }
 
 - (void)sliderChanged:(UISlider *)slider
@@ -260,11 +271,29 @@
     self.testView4.layer.timeOffset = slider.value * dampedSpringAnimation.duration;
 }
 
-CGFloat JNWAngularFrequency(CGFloat k, CGFloat m, CGFloat b) {
-	CGFloat w0 = sqrt(k / m);
-	CGFloat frequency = sqrt(pow(w0, 2) - (pow(b, 2) / (4*pow(m, 2))));
-	if (isnan(frequency)) frequency = 0;
-	return frequency;
+- (void)zTestViewTapped:(id)sender
+{
+    [self.zTestView.layer removeAnimationForKey:@"springAnimation"];
+    self.zTestView.backgroundColor = [UIColor magentaColor];
+    SHAnimationDampedSpring *spring = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.7f];
+    spring.frequencyHz = 2.0f;
+    spring.fromValue = -10.0f;
+    spring.toValue = 0.0f;
+    spring.velocity = -1500.0f;
+    CAKeyframeAnimation *springAnimation = [spring animationWithKeyPath:@"transform.translation.z" delay:0 timingFunctionName:kCAMediaTimingFunctionLinear];
+    [springAnimation setValue:@"zTestViewSpringAnimation" forKey:@"animationName"];
+    springAnimation.delegate = self;
+    [self.zTestView.layer addAnimation:springAnimation forKey:@"springAnimation"];
+}
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
+{
+    NSString *animationName = [anim valueForKey:@"animationName"];
+    if ( [animationName isEqualToString:@"zTestViewSpringAnimation"]) {
+        if ( flag ) {
+            self.zTestView.backgroundColor = [UIColor redColor];
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning

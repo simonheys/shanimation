@@ -87,7 +87,7 @@ Pod::Spec.new do |s|
   #
 
   s.source_files  = 'SHAnimation/**/*.{h,m}'
-  s.exclude_files = 'SHAnimation/UI'
+  # s.exclude_files = 'SHAnimation/UI'
 
   # s.public_header_files = 'Classes/**/*.h'
 
