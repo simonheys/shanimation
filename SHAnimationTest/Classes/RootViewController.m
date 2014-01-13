@@ -1,9 +1,8 @@
 //
 //  ViewController.m
-//  ChineasyUI
 //
 //  Created by Simon Heys on 05/12/2013.
-//  Copyright (c) 2013 Chineasy Limited. All rights reserved.
+//  Copyright (c) 2014 Simon Heys Limited. All rights reserved.
 //
 
 #import <QuartzCore/QuartzCore.h>
@@ -11,11 +10,6 @@
 #import "SHAnimation.h"
 #import "DragTestView.h"
 #import "SHAnimationDampedSpringView.h"
-
-NSString *NSStringFromCATransform3D(CATransform3D t) {
-    
-    return [NSString stringWithFormat:@"CATransform3D {\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n}", t.m11, t.m12, t.m13, t.m14, t.m21, t.m22, t.m23, t.m24, t.m31, t.m32, t.m33, t.m34, t.m41, t.m42, t.m43, t.m44];
-}
 
 @interface RootViewController () <UIGestureRecognizerDelegate, TransitionValueLayerDelegate>
 @property (nonatomic, strong) UIPinchGestureRecognizer *pinchGestureRecognizer;
@@ -136,7 +130,9 @@ NSString *NSStringFromCATransform3D(CATransform3D t) {
     [CATransaction commit];
 
     SHAnimationDampedSpring *springRotate = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.2f];
+    springRotate.fromValue = 0.0f;
     springRotate.toValue = M_PI;
+    springRotate.tolerance = 0.1f;
     [CATransaction begin];
     animation = [springRotate animationWithKeyPath:@"transform.rotation.z"];
     duration = 5.0f;
@@ -467,7 +463,6 @@ NSString *NSStringFromCATransform3D(CATransform3D t) {
     
     t = CATransform3DMakeTranslation(x, y, z);
     t = CATransform3DRotate(t, r, 0.3, 1, 0);
-    NSLog(@"t:%@",NSStringFromCATransform3D(t));
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     self.testView2.layer.transform = t;

@@ -1,9 +1,8 @@
 //
 //  SHAnimationDampedSpring.m
-//  ChineasyUI
 //
 //  Created by Simon Heys on 15/12/2013.
-//  Copyright (c) 2013 Chineasy Limited. All rights reserved.
+//  Copyright (c) 2014 Simon Heys Limited. All rights reserved.
 //
 
 #import "SHAnimationDampedSpring.h"
@@ -103,6 +102,7 @@ CGFloat const kSHAnimationDampedSpringDefaultTolerance = 0.001f;
         envelope = [self envelopeForTime:keyframesToTolerance * 1.0f / 60.0f];
         keyframesToTolerance++;
     }
+    NSLog(@"keyframesToTolerance:%d",keyframesToTolerance);
     
     // delay, hold on same keyframe
     NSInteger keyFrameCount = 0;
