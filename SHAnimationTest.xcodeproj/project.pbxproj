@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F42726F318AEB37D00F83BED /* SHSpringAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = F42726F218AEB37D00F83BED /* SHSpringAnimation.m */; };
 		F4274AD91881322800EE023F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4274AD41881322800EE023F /* InfoPlist.strings */; };
 		F4274ADA1881322800EE023F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4274AD61881322800EE023F /* main.m */; };
 		F4274AE11881323900EE023F /* DragTestView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4274ADE1881323900EE023F /* DragTestView.m */; };
@@ -28,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F42726F118AEB37D00F83BED /* SHSpringAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHSpringAnimation.h; sourceTree = "<group>"; };
+		F42726F218AEB37D00F83BED /* SHSpringAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHSpringAnimation.m; sourceTree = "<group>"; };
 		F4274AD51881322800EE023F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		F4274AD61881322800EE023F /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SHAnimationTest/main.m; sourceTree = SOURCE_ROOT; };
 		F4274ADD1881323900EE023F /* DragTestView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragTestView.h; sourceTree = "<group>"; };
@@ -108,6 +111,8 @@
 				F4274AE91881324F00EE023F /* SHAnimation.m */,
 				F4274AEA1881324F00EE023F /* SHAnimationDampedSpring.h */,
 				F4274AEB1881324F00EE023F /* SHAnimationDampedSpring.m */,
+				F42726F118AEB37D00F83BED /* SHSpringAnimation.h */,
+				F42726F218AEB37D00F83BED /* SHSpringAnimation.m */,
 				F4274AEC1881324F00EE023F /* SHAnimationSpring.h */,
 				F4274AED1881324F00EE023F /* SHAnimationSpring.m */,
 				F4274AEE1881324F00EE023F /* SHAnimationTransitionValueLayer.h */,
@@ -255,6 +260,7 @@
 				F4274B011881324F00EE023F /* SHAnimationDampedSpringView.m in Sources */,
 				F4274AE11881323900EE023F /* DragTestView.m in Sources */,
 				F4274AFD1881324F00EE023F /* SHAnimationDampedSpring.m in Sources */,
+				F42726F318AEB37D00F83BED /* SHSpringAnimation.m in Sources */,
 				F4274B031881324F00EE023F /* SHAnimationSpringViewController.m in Sources */,
 				F4274B001881324F00EE023F /* SHAnimationUnitBezier.m in Sources */,
 				F4274AFE1881324F00EE023F /* SHAnimationSpring.m in Sources */,
