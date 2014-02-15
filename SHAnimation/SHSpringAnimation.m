@@ -13,11 +13,43 @@
 CGFloat const kSHSpringAnimationFromValue = 0.0f;
 CGFloat const kSHSpringAnimationToValue = 1.0f;
 CGFloat const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
+CGFloat const kSHSpringAnimationTolerance = 0.0001f;
 
 @interface SHSpringAnimation ()
+@property (nonatomic, readonly) NSTimeInterval timeToReachTolerance;
 @end
 
 @implementation SHSpringAnimation
+
+- (NSTimeInterval)duration
+{
+    if ( 0 == [super duration] ) {
+        return self.timeToReachTolerance;
+    }
+    return [super duration];
+}
+
+- (NSTimeInterval)timeToReachTolerance
+{
+    CGFloat angularFrequency = 2.0f * M_PI * _frequencyHz;
+    CGFloat timeToReachTolerance, e;
+    CGFloat envelope = CGFLOAT_MAX;
+    CGFloat alpha = angularFrequency * sqrtf(1.0f - self.dampingRatio * self.dampingRatio);
+    timeToReachTolerance = 0;
+    while ( (timeToReachTolerance < (kSHAnimationMaximumKeyframeCount * kSHSpringAnimationDeltaTime)) && fabs(envelope-kSHSpringAnimationToValue) > kSHSpringAnimationTolerance ) {
+        e = expf( -angularFrequency * self.dampingRatio * timeToReachTolerance );
+//        NSLog(@"e:%f",e);
+        if ( 0 == self.unitVelocity ) {
+            envelope = kSHSpringAnimationToValue + (kSHSpringAnimationFromValue - kSHSpringAnimationToValue) * e;
+        }
+        else {
+            envelope = kSHSpringAnimationToValue + ((kSHSpringAnimationFromValue - kSHSpringAnimationToValue) + self.unitVelocity / alpha) * e;
+        }
+        timeToReachTolerance += kSHSpringAnimationDeltaTime;
+//        NSLog(@"envelope:%f",envelope);
+    }
+    return timeToReachTolerance;
+}
 
 - (NSArray *)values
 {
@@ -27,12 +59,13 @@ CGFloat const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
     CGFloat cosTerm;
     CGFloat sinTerm;
     CGFloat angularFrequency = 2.0f * M_PI * _frequencyHz;
-    CGFloat tolerance = fabs(kSHSpringAnimationFromValue-kSHSpringAnimationToValue) * 0.00125f;
-    
-    if ( 0 != self.unitVelocity ) {
-        tolerance = MIN(tolerance, fabs(self.unitVelocity) * 0.00125f);
-    }
-    tolerance = MAX(tolerance, 0.00125f);
+    NSTimeInterval timeToReachTolerance = self.timeToReachTolerance;
+//    CGFloat tolerance = fabs(kSHSpringAnimationFromValue-kSHSpringAnimationToValue) * 0.0001;
+//    
+//    if ( 0 != self.unitVelocity ) {
+//        tolerance = MIN(tolerance, fabs(self.unitVelocity) * 0.0001);
+//    }
+//    tolerance = MAX(tolerance, 0.0001);
     // if critically damped
     if ( 1.0f == self.dampingRatio ) {
         expTerm = expf( -angularFrequency * kSHSpringAnimationDeltaTime );
@@ -45,23 +78,22 @@ CGFloat const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
         sinTerm = sinf( alpha * kSHSpringAnimationDeltaTime );
     }
     
-    CGFloat timeToReachTolerance, e, envelope;
-    timeToReachTolerance = 0;
-    envelope = CGFLOAT_MAX;
-    while ( (timeToReachTolerance < (kSHAnimationMaximumKeyframeCount * kSHSpringAnimationDeltaTime)) && fabs(envelope-kSHSpringAnimationToValue) > tolerance ) {
-        e = expf( -angularFrequency * self.dampingRatio * timeToReachTolerance );
-//        NSLog(@"e:%f",e);
-        if ( 0 == self.unitVelocity ) {
-            envelope = kSHSpringAnimationToValue + (kSHSpringAnimationFromValue - kSHSpringAnimationToValue) * e;
-        }
-        else {
-            envelope = kSHSpringAnimationToValue + ((kSHSpringAnimationFromValue - kSHSpringAnimationToValue) + self.unitVelocity / alpha) * e;
-        }
-        timeToReachTolerance += kSHSpringAnimationDeltaTime;
-//        NSLog(@"envelope:%f",envelope);
-    }
+//    CGFloat timeToReachTolerance, e, envelope;
+//    timeToReachTolerance = 0;
+//    envelope = CGFLOAT_MAX;
+//    while ( (timeToReachTolerance < (kSHAnimationMaximumKeyframeCount * kSHSpringAnimationDeltaTime)) && fabs(envelope-kSHSpringAnimationToValue) > tolerance ) {
+//        e = expf( -angularFrequency * self.dampingRatio * timeToReachTolerance );
+//        if ( 0 == self.unitVelocity ) {
+//            envelope = kSHSpringAnimationToValue + (kSHSpringAnimationFromValue - kSHSpringAnimationToValue) * e;
+//        }
+//        else {
+//            envelope = kSHSpringAnimationToValue + ((kSHSpringAnimationFromValue - kSHSpringAnimationToValue) + self.unitVelocity / alpha) * e;
+//        }
+//        timeToReachTolerance += kSHSpringAnimationDeltaTime;
+//    }
     NSInteger numberOfKeyframes = timeToReachTolerance / kSHSpringAnimationDeltaTime;
     NSMutableArray *keyframes = [NSMutableArray arrayWithCapacity:numberOfKeyframes];
+//    self.duration = timeToReachTolerance;
     
     CGFloat t = 0;
     CGFloat velocity = self.unitVelocity;
