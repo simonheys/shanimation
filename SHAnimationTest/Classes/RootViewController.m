@@ -131,16 +131,28 @@
     [layer setValue:@(250.0f) forKeyPath:@"transform.translation.z"];
     [CATransaction commit];
 
-    SHAnimationDampedSpring *springRotate = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.2f];
-    springRotate.toValue = M_PI;
-    [CATransaction begin];
-    animation = [springRotate animationWithKeyPath:@"transform.rotation.z"];
-    duration = 5.0f;
-//    [CATransaction setValue:@(duration) forKey:kCATransactionAnimationDuration];
-    animation.duration = 5.0f;
-    [layer addAnimation:animation forKey:@"rotation.z"];
-    [layer setValue:@(springRotate.toValue) forKeyPath:@"transform.rotation.z"];
-    [CATransaction commit];
+//    SHAnimationDampedSpring *springRotate = [SHAnimationDampedSpring unitSpringWithDampingRatio:0.2f];
+//    springRotate.toValue = M_PI;
+//    [CATransaction begin];
+//    animation = [springRotate animationWithKeyPath:@"transform.rotation.z"];
+//    duration = 5.0f;
+//    animation.duration = 5.0f;
+//    [layer addAnimation:animation forKey:@"rotation.z"];
+//    [layer setValue:@(springRotate.toValue) forKeyPath:@"transform.rotation.z"];
+//    [CATransaction commit];
+    
+//    [CATransaction begin];
+    SHSpringAnimation *sa2 = [SHSpringAnimation animationWithKeyPath:@"transform.rotation.z"];
+    sa2.dampingRatio = 0.2f;
+    sa2.frequencyHz = 0.1f;
+    sa2.fromValue = @(0.0f);
+    sa2.toValue = @(M_PI);
+    sa2.duration = 5.0f;
+//    sa2.keyPath = @"transform.rotation.z";
+    [layer addAnimation:sa2 forKey:@"rotation.z"];
+    [layer setValue:sa2.toValue forKeyPath:@"transform.rotation.z"];
+//    [CATransaction commit];
+    
     
 //    [CATransaction begin];
 //    CAAnimation *gravity = [SHAnimation gravityAnimationWithKeyPath:@"transform.translation.y" fromValue:768/2 velocity:-500.0f keyframeCount:3*60];

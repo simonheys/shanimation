@@ -8,26 +8,18 @@
 
 #import "SHAnimation.h"
 #import "SHSpringAnimation.h"
+#import "SHValueInterpolation.h"
 
 CGFloat const kSHSpringAnimationFromValue = 0.0f;
 CGFloat const kSHSpringAnimationToValue = 1.0f;
 CGFloat const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
 
 @interface SHSpringAnimation ()
-//@property (nonatomic) CGFloat angularFrequency;
-//@property (nonatomic) CGFloat omegaZeta;
-//@property (nonatomic) CGFloat alpha;
-//@property (nonatomic) CGFloat expTerm;
-//@property (nonatomic) CGFloat cosTerm;
-//@property (nonatomic) CGFloat sinTerm;
-//@property (nonatomic) CGFloat deltaTime;
-//@property (nonatomic) CGFloat tolerance;
-//@property (nonatomic) CGFloat currentValue;
 @end
 
 @implementation SHSpringAnimation
 
-- (void)computeConstants
+- (NSArray *)values
 {
     CGFloat omegaZeta;
     CGFloat alpha;
@@ -56,8 +48,9 @@ CGFloat const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
     CGFloat timeToReachTolerance, e, envelope;
     timeToReachTolerance = 0;
     envelope = CGFLOAT_MAX;
-    while ( (timeToReachTolerance < (kSHAnimationMaximumKeyframeCount * kSHSpringAnimationDeltaTime)) && fabs(envelope) > tolerance ) {
+    while ( (timeToReachTolerance < (kSHAnimationMaximumKeyframeCount * kSHSpringAnimationDeltaTime)) && fabs(envelope-kSHSpringAnimationToValue) > tolerance ) {
         e = expf( -angularFrequency * self.dampingRatio * timeToReachTolerance );
+//        NSLog(@"e:%f",e);
         if ( 0 == self.unitVelocity ) {
             envelope = kSHSpringAnimationToValue + (kSHSpringAnimationFromValue - kSHSpringAnimationToValue) * e;
         }
@@ -65,11 +58,16 @@ CGFloat const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
             envelope = kSHSpringAnimationToValue + ((kSHSpringAnimationFromValue - kSHSpringAnimationToValue) + self.unitVelocity / alpha) * e;
         }
         timeToReachTolerance += kSHSpringAnimationDeltaTime;
+//        NSLog(@"envelope:%f",envelope);
     }
+    NSInteger numberOfKeyframes = timeToReachTolerance / kSHSpringAnimationDeltaTime;
+    NSMutableArray *keyframes = [NSMutableArray arrayWithCapacity:numberOfKeyframes];
     
     CGFloat t = 0;
     CGFloat velocity = self.unitVelocity;
     CGFloat currentValue = kSHSpringAnimationFromValue;
+    
+    SHValueInterpolation valueInterpolate = SHValueInterpolate(self.fromValue, self.toValue);
     
     for ( t = 0; t < timeToReachTolerance; t+= kSHSpringAnimationDeltaTime ) {
         // calculate initial state in equilibrium relative space
@@ -93,14 +91,26 @@ CGFloat const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
             currentValue = kSHSpringAnimationToValue + expTerm * ( c1 * cosTerm + c2 * sinTerm );
             velocity = -expTerm * ( ( c1 * omegaZeta - c2 * alpha ) * cosTerm + ( c1 * alpha + c2 * omegaZeta ) * sinTerm );
         }
+        
+        NSValue *value = valueInterpolate(currentValue);
+        [keyframes addObject:value];
+//        NSLog(@"fraction:%f value:%@",currentValue,value);
     }
+    return keyframes;
 }
 
+#pragma mark - NSObject
 
-
-- (NSArray *)values
+- (id)copyWithZone:(NSZone *)zone
 {
-    
+    SHSpringAnimation *copy = [super copyWithZone:zone];
+    if (copy == nil) return nil;
+    copy->_frequencyHz = _frequencyHz;
+    copy->_dampingRatio = _dampingRatio;
+    copy->_unitVelocity = _unitVelocity;
+    copy->_fromValue = _fromValue;
+    copy->_toValue = _toValue;
+    return copy;
 }
 
 @end

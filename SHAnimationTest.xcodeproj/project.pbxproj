@@ -23,6 +23,7 @@
 		F4274B031881324F00EE023F /* SHAnimationSpringViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4274AF81881324F00EE023F /* SHAnimationSpringViewController.m */; };
 		F4274B041881324F00EE023F /* SHAnimationSpringViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4274AF91881324F00EE023F /* SHAnimationSpringViewController.xib */; };
 		F4274B051881324F00EE023F /* SHAnimationUnitBezierView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4274AFB1881324F00EE023F /* SHAnimationUnitBezierView.m */; };
+		F43ABBB318AF48CE0009DD9E /* SHValueInterpolation.m in Sources */ = {isa = PBXBuildFile; fileRef = F43ABBB218AF48CE0009DD9E /* SHValueInterpolation.m */; };
 		F4EE658F18812EC7001A7AFC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4EE658E18812EC7001A7AFC /* Foundation.framework */; };
 		F4EE659118812EC7001A7AFC /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4EE659018812EC7001A7AFC /* CoreGraphics.framework */; };
 		F4EE659318812EC7001A7AFC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4EE659218812EC7001A7AFC /* UIKit.framework */; };
@@ -61,6 +62,8 @@
 		F4274AFB1881324F00EE023F /* SHAnimationUnitBezierView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHAnimationUnitBezierView.m; sourceTree = "<group>"; };
 		F4274B06188132F800EE023F /* SHAnimationTest-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SHAnimationTest-Info.plist"; path = "SHAnimationTest/SHAnimationTest-Info.plist"; sourceTree = SOURCE_ROOT; };
 		F4274B07188132F800EE023F /* SHAnimationTest-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SHAnimationTest-Prefix.pch"; path = "SHAnimationTest/SHAnimationTest-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		F43ABBB118AF48CE0009DD9E /* SHValueInterpolation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHValueInterpolation.h; sourceTree = "<group>"; };
+		F43ABBB218AF48CE0009DD9E /* SHValueInterpolation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHValueInterpolation.m; sourceTree = "<group>"; };
 		F4EE658B18812EC7001A7AFC /* SHAnimationTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SHAnimationTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4EE658E18812EC7001A7AFC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F4EE659018812EC7001A7AFC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -119,6 +122,8 @@
 				F4274AEF1881324F00EE023F /* SHAnimationTransitionValueLayer.m */,
 				F4274AF01881324F00EE023F /* SHAnimationUnitBezier.h */,
 				F4274AF11881324F00EE023F /* SHAnimationUnitBezier.m */,
+				F43ABBB118AF48CE0009DD9E /* SHValueInterpolation.h */,
+				F43ABBB218AF48CE0009DD9E /* SHValueInterpolation.m */,
 				F4274AF21881324F00EE023F /* UI */,
 			);
 			path = SHAnimation;
@@ -268,6 +273,7 @@
 				F4274B021881324F00EE023F /* SHAnimationSpringView.m in Sources */,
 				F4274AFF1881324F00EE023F /* SHAnimationTransitionValueLayer.m in Sources */,
 				F4274AFC1881324F00EE023F /* SHAnimation.m in Sources */,
+				F43ABBB318AF48CE0009DD9E /* SHValueInterpolation.m in Sources */,
 				F4274ADA1881322800EE023F /* main.m in Sources */,
 				F4274AE21881323900EE023F /* RootViewController.m in Sources */,
 			);

@@ -12,6 +12,7 @@
 #import "SHAnimationSpring.h"
 #import "SHAnimationDampedSpring.h"
 #import "SHAnimationTransitionValueLayer.h"
+#import "SHSpringAnimation.h"
 
 #define kSHAnimationDefaultKeyframeCount 60
 #define kSHAnimationMaximumKeyframeCount 60*60
