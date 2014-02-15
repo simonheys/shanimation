@@ -1,13 +1,14 @@
 //
 //  SHAnimationDampedSpring.m
-//  ChineasyUI
 //
 //  Created by Simon Heys on 15/12/2013.
-//  Copyright (c) 2013 Chineasy Limited. All rights reserved.
+//  Copyright (c) 2014 Simon Heys Limited. All rights reserved.
 //
 
 #import "SHAnimationDampedSpring.h"
 #import "SHAnimation.h"
+
+CGFloat const kSHAnimationDampedSpringDefaultTolerance = 0.001f;
 
 @interface SHAnimationDampedSpring ()
 @property (nonatomic) CGFloat angularFrequency;
@@ -17,7 +18,6 @@
 @property (nonatomic) CGFloat cosTerm;
 @property (nonatomic) CGFloat sinTerm;
 @property (nonatomic) CGFloat deltaTime;
-@property (nonatomic) CGFloat tolerance;
 @property (nonatomic) CGFloat currentValue;
 @property (nonatomic) BOOL needsRecalculation;
 @end
@@ -32,20 +32,13 @@
     spring.toValue = 0.0f;
     spring.fromValue = 1.0f;
     spring.velocity = 0.0f;
+    spring.tolerance = kSHAnimationDampedSpringDefaultTolerance;
     return spring;
 }
 
 + (instancetype)unitSpring
 {
     return [SHAnimationDampedSpring unitSpringWithDampingRatio:1.0f];
-}
-
-- (BOOL)stopped
-{
-    if ( fabs(self.velocity) < self.tolerance && fabs(self.currentValue - self.toValue) < self.tolerance ) {
-        return YES;
-    }
-    return NO;
 }
 
 - (void)setFromValue:(CGFloat)value
@@ -69,10 +62,10 @@
 
 - (void)setTolerance:(CGFloat)tolerance
 {
-    if ( 0 == tolerance ) {
-        NSLog(@"what?");
+    _tolerance = fabs(tolerance);
+    if ( 0 == _tolerance ) {
+        _tolerance = kSHAnimationDampedSpringDefaultTolerance;
     }
-    _tolerance = tolerance;
 }
 
 - (CAKeyframeAnimation *)animationWithKeyPath:(NSString *)path
@@ -101,18 +94,30 @@
         [self computeConstants];
         self.needsRecalculation = NO;
     }
-	NSMutableArray *values = [NSMutableArray arrayWithCapacity:kSHAnimationMaximumKeyframeCount];
+    
+    // how many keyframes to hit the tolerance?
+    NSInteger keyframesToTolerance = 0;
+    CGFloat envelope = CGFLOAT_MAX;
+    while ( fabs(envelope - self.toValue) > self.tolerance && keyframesToTolerance < kSHAnimationMaximumKeyframeCount ) {
+        envelope = [self envelopeForTime:keyframesToTolerance * 1.0f / 60.0f];
+        keyframesToTolerance++;
+    }
+    NSLog(@"keyframesToTolerance:%d",keyframesToTolerance);
+    
+    // delay, hold on same keyframe
     NSInteger keyFrameCount = 0;
-    while ( !self.stopped && keyFrameCount < delay * 60.0f && keyFrameCount < kSHAnimationMaximumKeyframeCount ) {
+	NSMutableArray *values = [NSMutableArray arrayWithCapacity:keyframesToTolerance];
+    while ( keyFrameCount < delay * 60.0f && keyFrameCount < keyframesToTolerance ) {
 		[values addObject:@(self.currentValue)];
         keyFrameCount++;
     }
-    while ( !self.stopped && keyFrameCount < kSHAnimationMaximumKeyframeCount ) {
+    
+    while ( keyFrameCount < keyframesToTolerance ) {
         stepSpring(deltaTime, &_currentValue, _toValue, &_velocity, _angularFrequency, _dampingRatio, _expTerm, _omegaZeta, _alpha, _cosTerm, _sinTerm);
-//		[self stepTime:deltaTime];
 		[values addObject:@(_currentValue)];
         keyFrameCount++;
     }
+    NSLog(@"keyFrames:%d",keyFrameCount);
     
     if ( keyFrameCount >= kSHAnimationMaximumKeyframeCount ) {
         NSLog(@"excessibvley long!");
@@ -156,11 +161,6 @@
 // calculate constants based on motion parameters
 - (void)computeConstants
 {
-    self.tolerance = fabs(self.fromValue-self.toValue) * 0.00125f;
-    if ( 0 != self.velocity ) {
-        self.tolerance = MIN(self.tolerance, fabs(self.velocity) * 0.00125f);
-    }
-    self.tolerance = MAX(self.tolerance, 0.00125f);
     // if critically damped
     if ( 1.0f == self.dampingRatio ) {
         self.expTerm = expf( -self.angularFrequency * self.deltaTime );
@@ -173,6 +173,22 @@
         self.sinTerm = sinf( self.alpha * self.deltaTime );
     }
     self.needsRecalculation = NO;
+}
+
+
+- (CGFloat)envelopeForTime:(CGFloat)t
+{
+    if ( self.needsRecalculation ) {
+        [self computeConstants];
+    }
+    CGFloat envelope = expf( -self.angularFrequency * self.dampingRatio * t );
+
+    if ( 0 == self.velocity ) {
+        return self.toValue + (self.fromValue - self.toValue) * envelope;
+    }
+    else {
+        return self.toValue + ((self.fromValue - self.toValue) + self.velocity/self.alpha) * envelope;
+    }
 }
 
 // stepTime is based on http://www.ryanjuckett.com/programming/17-physics/34-damped-springs?start=9
@@ -227,23 +243,6 @@ static __inline__ void stepSpring(CGFloat deltaTime, CGFloat *currentValue, CGFl
         CGFloat c2 = (initialVel + omegaZeta * initialPos) / alpha;
         *currentValue = toValue + expTerm * ( c1 * cosTerm + c2 * sinTerm );
         *velocity = -expTerm * ( ( c1 * omegaZeta - c2 * alpha ) * cosTerm + ( c1 * alpha + c2 * omegaZeta ) * sinTerm );
-    }
-}
-
-- (CGFloat)envelopeForTime:(CGFloat)t
-{
-    if ( self.needsRecalculation ) {
-        [self computeConstants];
-    }
-    CGFloat envelope = expf(-self.omegaZeta * t);
-    // TODO: log here is reversing the expf calculation in computeConstants
-    // so that we can convert to absolute time rather than delta
-    envelope = expf(log(self.expTerm) * t / self.deltaTime);
-    if ( 0 == self.velocity ) {
-        return self.toValue + (self.fromValue - self.toValue) * envelope;
-    }
-    else {
-        return self.toValue + ((self.fromValue - self.toValue) + self.velocity/self.alpha) * envelope;
     }
 }
 

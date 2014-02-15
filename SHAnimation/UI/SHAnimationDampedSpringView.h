@@ -1,9 +1,8 @@
 //
 //  SHAnimationDampedSpringView.h
-//  ChineasyUI
 //
 //  Created by Simon Heys on 15/12/2013.
-//  Copyright (c) 2013 Chineasy Limited. All rights reserved.
+//  Copyright (c) 2014 Simon Heys Limited. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
