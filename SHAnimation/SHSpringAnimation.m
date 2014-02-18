@@ -12,8 +12,8 @@
 
 CGFloat const kSHSpringAnimationFromValue = 0.0f;
 CGFloat const kSHSpringAnimationToValue = 1.0f;
-CGFloat const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
 CGFloat const kSHSpringAnimationTolerance = 0.0001f;
+NSTimeInterval const kSHSpringAnimationDeltaTime = 1.0f / 60.0f;
 
 @interface SHSpringAnimation ()
 @property (nonatomic, readonly) NSTimeInterval timeToReachTolerance;
@@ -32,7 +32,8 @@ CGFloat const kSHSpringAnimationTolerance = 0.0001f;
 - (NSTimeInterval)timeToReachTolerance
 {
     CGFloat angularFrequency = 2.0f * M_PI * _frequencyHz;
-    CGFloat timeToReachTolerance, e;
+    NSTimeInterval timeToReachTolerance;
+    CGFloat e;
     CGFloat envelope = CGFLOAT_MAX;
     CGFloat alpha = angularFrequency * sqrtf(1.0f - self.dampingRatio * self.dampingRatio);
     timeToReachTolerance = 0;
@@ -58,7 +59,7 @@ CGFloat const kSHSpringAnimationTolerance = 0.0001f;
     CGFloat expTerm;
     CGFloat cosTerm;
     CGFloat sinTerm;
-    CGFloat angularFrequency = 2.0f * M_PI * _frequencyHz;
+    CGFloat angularFrequency = 2.0f * M_PI * self.frequencyHz;
     NSTimeInterval timeToReachTolerance = self.timeToReachTolerance;
 //    CGFloat tolerance = fabs(kSHSpringAnimationFromValue-kSHSpringAnimationToValue) * 0.0001;
 //    
@@ -91,7 +92,7 @@ CGFloat const kSHSpringAnimationTolerance = 0.0001f;
 //        }
 //        timeToReachTolerance += kSHSpringAnimationDeltaTime;
 //    }
-    NSInteger numberOfKeyframes = timeToReachTolerance / kSHSpringAnimationDeltaTime;
+    NSInteger numberOfKeyframes = (self.delay+timeToReachTolerance) / kSHSpringAnimationDeltaTime;
     NSMutableArray *keyframes = [NSMutableArray arrayWithCapacity:numberOfKeyframes];
 //    self.duration = timeToReachTolerance;
     
@@ -100,6 +101,10 @@ CGFloat const kSHSpringAnimationTolerance = 0.0001f;
     CGFloat currentValue = kSHSpringAnimationFromValue;
     
     SHValueInterpolation valueInterpolate = SHValueInterpolate(self.fromValue, self.toValue);
+
+    for ( t = 0; t < self.delay; t+= kSHSpringAnimationDeltaTime ) {
+        [keyframes addObject:self.fromValue];
+    }
     
     for ( t = 0; t < timeToReachTolerance; t+= kSHSpringAnimationDeltaTime ) {
         // calculate initial state in equilibrium relative space
@@ -142,6 +147,7 @@ CGFloat const kSHSpringAnimationTolerance = 0.0001f;
     copy->_unitVelocity = _unitVelocity;
     copy->_fromValue = _fromValue;
     copy->_toValue = _toValue;
+    copy->_delay = _delay;
     return copy;
 }
 

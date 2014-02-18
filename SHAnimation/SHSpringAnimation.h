@@ -12,6 +12,7 @@
 @property (nonatomic) CGFloat frequencyHz;
 @property (nonatomic) CGFloat dampingRatio;
 @property (nonatomic) CGFloat unitVelocity;
+@property (nonatomic) NSTimeInterval delay;
 @property (nonatomic, copy) NSValue *fromValue;
 @property (nonatomic, copy) NSValue *toValue;
 @end
